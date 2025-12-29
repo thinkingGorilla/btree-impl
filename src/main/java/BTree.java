@@ -7,7 +7,7 @@ public class BTree {
 
     public void insert(int key) {
         if (root == null) {
-            root = new BTreeNode(false);
+            root = new BTreeNode(true);
             root.keys[0] = key;
             root.numKeys = 1;
         } else {
@@ -27,7 +27,14 @@ public class BTree {
         int currentIndex = node.numKeys - 1;
 
         if (node.isLeaf) {
+            // 정렬된 순서를 지키기 위해, 삽입할 값보다 큰 key를 오른쪽으로 한 칸씩 이동
+            while(currentIndex >= 0 && node.keys[currentIndex] > key) {
+                node.keys[currentIndex + 1] = node.keys[currentIndex];
+                currentIndex--;
+            }
 
+            node.keys[++currentIndex] = key;
+            node.numKeys++;
         } else {
 
         }
@@ -40,10 +47,9 @@ public class BTree {
         bTree.insert(20);
         bTree.insert(5);
         bTree.insert(6);
-        bTree.insert(12);
-        bTree.insert(30);
+
 
         System.out.print("In-order traversal of the B-tree: ");
-        bTree.traverse();
+        // bTree.traverse();
     }
 }
