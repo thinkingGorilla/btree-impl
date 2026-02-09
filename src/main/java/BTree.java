@@ -49,6 +49,8 @@ public class BTree {
         newChild.keysCount = minDegree - 1;
 
         // 제자리(in-place) 알고리즘으로 새로운 노드의 포인터가 들어갈 위치를 확보한다.
+        // childIndex 위치의 키는 그대로 두고,
+        // 그 다음 인덱스(childIndex + 1)부터 끝까지의 데이터들을 오른쪽으로 밀어야 한다.
         for (int i = parent.keysCount; i >= childIndex + 1; i--) {
             parent.children[i + 1] = parent.children[i];
         }
