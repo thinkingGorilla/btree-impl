@@ -1,20 +1,16 @@
 public class BTreeNode {
 
-    private static final int MAX_DEGREE = 4;
+    int [] keys;
+    BTreeNode [] children;
+    int keysCount;
+    boolean isLeaf;
 
-    public int numKeys;
-    public int[] keys;
-    public BTreeNode[] children;
-    public boolean isLeaf;
-
-    public BTreeNode(boolean isLeaf) {
-        this.numKeys = 0;
-        this.keys = new int[MAX_DEGREE - 1];
-        this.children = new BTreeNode[MAX_DEGREE];
+    public BTreeNode(int minDegree, boolean isLeaf) {
+        // 최소 차수 기준으로 최대 키와 최대 자식 수를 결정한다.
+        this.keys = new int[2 * minDegree - 1];
+        this.children = new BTreeNode[2 * minDegree];
+        // 키의 물리적인 배열 크기와 상관 없이, 유효한 데이터가 들어있는 경계선 인덱스 표시
+        this.keysCount = 0;
         this.isLeaf = isLeaf;
-    }
-
-    public boolean isFull() {
-        return numKeys == MAX_DEGREE - 1;
     }
 }
