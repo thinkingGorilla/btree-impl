@@ -1,6 +1,6 @@
 public class BTree {
 
-    // 이점?
+    // 최소차수로 구성할 때 이점?
     // 1. 항상 홀수 개의 키 → 항상 수학적 정중앙이 존재
     // 2. 대칭적 분할 가능 →
     //   키에서 중앙값 하나를 부모로 올리면 남은 키의 개수는 2t-2로,
@@ -19,6 +19,13 @@ public class BTree {
     // 부모 노드에 올라간 키 K를 기준으로,
     // 왼쪽 자식들은 K보다 작아야 하고 오른쪽 자식들은 K보다 커야 한다.
     // 제자리(in-place) 알고리즘으로 배열 삽입을 실행한다.
+    // C₀, K₀, C₁, K₁, C₂, K₂, …, Kₙ₋₁, Cₙ
+    // parent.keys[i]를 기준으로,
+    // 왼쪽 자식은 parent.children[i]
+    // 오른쪽 자식은 parent.children[i + 1]
+    // childIndex를 기준으로,
+    // parent.children[childIndex]의 부모키는 parent.keys[childIndex]
+    // parent.children[childIndex + 1]의 부모키는 parent.keys[childIndex]
     void splitChild(BTreeNode parent, int childIndex) {
         BTreeNode fullChild = parent.children[childIndex];
         BTreeNode newChild = new BTreeNode(minDegree, fullChild.isLeaf);
@@ -48,12 +55,30 @@ public class BTree {
         fullChild.keysCount = minDegree - 1;
         newChild.keysCount = minDegree - 1;
 
+        // 부모의 자식 포인터 이동
         // 제자리(in-place) 알고리즘으로 새로운 노드의 포인터가 들어갈 위치를 확보한다.
         // childIndex 위치의 키는 그대로 두고,
-        // 그 다음 인덱스(childIndex + 1)부터 끝까지의 데이터들을 오른쪽으로 밀어야 한다.
+        // 다음 인덱스(childIndex + 1)부터 끝까지의 데이터들을 오른쪽으로 밀어야 한다.
+        // 내려가면서 미리 꽉 찬 노드를 쪼개는(Proactive Split) 방식을 쓰기 때문에,
+        // index out of bounds가 발생할 일은 없다.
+        // e.g. ◼️◼️◼️◽️◽️ → ◼️◼️◽️◼️◽️
+        // 자식은 키보다 하나 더 많다.
+        // 예를 들어 keyCount가 3일 떄, 자식은 키보다 하나 더 많다는 점을 생각하면
+        // 자식은 배열 인덱스 3까지 차 있다. 따라서 인덱스의 시작점은 keyCount부터 시작한다.
         for (int i = parent.keysCount; i >= childIndex + 1; i--) {
             parent.children[i + 1] = parent.children[i];
         }
+        // 새 자식 연결
+        parent.children[childIndex + 1] = newChild;
+
+        // 부모의 키 이동
+        // 이동은 키의 길이(= keyCount)보다 하나 작은 횟수만큼 수행되어야 한다.
+        for (int i = parent.keysCount - 1; i >= childIndex; i--) {
+            parent.keys[i + 1] = parent.keys[i];
+        }
+        // 꽉 찬 노드의 중앙 키 승격
+        parent.keys[childIndex] = fullChild.keys[minDegree - 1];
+        parent.keysCount++;
     }
 
     void insert(int key) {
