@@ -19,7 +19,8 @@ public class BTree {
     // 부모 노드에 올라간 키 K를 기준으로,
     // 왼쪽 자식들은 K보다 작아야 하고 오른쪽 자식들은 K보다 커야 한다.
     // 제자리(in-place) 알고리즘으로 배열 삽입을 실행한다.
-    // C₀, K₀, C₁, K₁, C₂, K₂, …, Kₙ₋₁, Cₙ
+    // 관계 중심 표기법 : C₀, K₀, C₁, K₁, C₂, …, Cₙ, Kₙ, Cₙ₊₁
+    // 배열 중심 표기법 : C₀, K₀, C₁, K₁, C₂, K₂, …, Kₙ₋₁, Cₙ
     // parent.keys[i]를 기준으로,
     // 왼쪽 자식은 parent.children[i]
     // 오른쪽 자식은 parent.children[i + 1]
@@ -69,6 +70,7 @@ public class BTree {
             parent.children[i + 1] = parent.children[i];
         }
         // 새 자식 연결
+        // C₀, K₀, C₁, K₁, C₂, K₂, …, Kₙ₋₁, Cₙ
         parent.children[childIndex + 1] = newChild;
 
         // 부모의 키 이동
@@ -77,6 +79,7 @@ public class BTree {
             parent.keys[i + 1] = parent.keys[i];
         }
         // 꽉 찬 노드의 중앙 키 승격
+        // C₀, K₀, C₁, K₁, C₂, K₂, …, Kₙ₋₁, Cₙ
         parent.keys[childIndex] = fullChild.keys[minDegree - 1];
         parent.keysCount++;
     }
